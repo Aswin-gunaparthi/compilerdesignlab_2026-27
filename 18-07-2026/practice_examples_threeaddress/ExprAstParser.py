@@ -60,10 +60,10 @@ class ExprAstParser(Parser):
 
 lexer = ExprAstLexer()
 parser = ExprAstParser()
-inp = 'a=2+3*5'
+inp = 'a=b+c*d/e'
 result = parser.parse(lexer.tokenize(inp))
-print(pretty(result))
-to_dot(result)
+#print(pretty(result))
+#to_dot(result)
 insts = generate_for_statement(result)
 tac = render_threeAddressCode(insts)
 print(tac)
