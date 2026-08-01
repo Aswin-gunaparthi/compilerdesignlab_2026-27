@@ -32,16 +32,9 @@ class CopyTAC:
 
 
 
-def render_program(instructions):
+def render_threeAddressCode(instructions):
     """
     Text form of a flat list of TAC instructions, one per line 
     """
     return "\n".join(instr.render() for instr in instructions)
 
-
-def is_literal(operand):
-    """
-    True if `operand` (always a string) is a literal integer rather than
-    a variable/temporary name. 
-    """
-    return operand.isdigit()

@@ -1,6 +1,8 @@
 from sly import Parser
 from ExprAstLexer import ExprAstLexer
 from ast_nodes import * 
+from tac_generator import *
+from three_address_code import render_threeAddressCode 
 
 class ExprAstParser(Parser):
     tokens = ExprAstLexer.tokens
@@ -62,6 +64,7 @@ inp = 'a=2+3*5'
 result = parser.parse(lexer.tokenize(inp))
 print(pretty(result))
 to_dot(result)
-#print(result)
-
+insts = generate_for_statement(result)
+tac = render_threeAddressCode(insts)
+print(tac)
 
