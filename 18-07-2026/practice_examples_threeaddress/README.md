@@ -2,7 +2,7 @@
 
 This lab exercise demonstrates how a compiler generates **Three-Address Code (TAC)** from an **Abstract Syntax Tree (AST)**. The AST is traversed in **postorder (bottom-up)** so that the value of each subexpression is computed before it is used by its parent node.
 
-The generated intermediate code is represented in **Quadruple notation**, one of the most common intermediate representations used in compilers.
+The generated intermediate code is represented in **Quadruple notation of Three-Address Code (TAC)**.
 
 ---
 
