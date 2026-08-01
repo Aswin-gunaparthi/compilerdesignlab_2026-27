@@ -60,7 +60,7 @@ class ExprAstParser(Parser):
 
 lexer = ExprAstLexer()
 parser = ExprAstParser()
-inp = 'a=b+c*d/e'
+inp = 'x=a+b*c'
 result = parser.parse(lexer.tokenize(inp))
 #print(pretty(result))
 #to_dot(result)
