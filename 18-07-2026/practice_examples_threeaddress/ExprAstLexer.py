@@ -1,6 +1,6 @@
 from sly import Lexer
 class ExprAstLexer(Lexer):
-    literals = {'+', '-', '*', '/', '%', '='}
+    literals = {'+', '-', '*', '/', '%', '=','(',')'}
     tokens   = { NUMBER, ID }
 
     ID = r'[A-Za-z_][A-Za-z0-9_]*'

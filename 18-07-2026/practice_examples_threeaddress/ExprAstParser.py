@@ -57,10 +57,15 @@ class ExprAstParser(Parser):
     def F(self, value):
         return Var(value[0])
 
+    # F -> (E)
+    @_('"(" E ")"')
+    def F(self, value):
+        return value[1]
+
 
 lexer = ExprAstLexer()
 parser = ExprAstParser()
-inp = 'x=a+b*c'
+inp = 'x=(a+b)*c'
 result = parser.parse(lexer.tokenize(inp))
 #print(pretty(result))
 #to_dot(result)
