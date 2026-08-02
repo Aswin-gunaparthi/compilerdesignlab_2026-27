@@ -1,12 +1,8 @@
 """
-TinyCStr Level 1 Lexer -- REFERENCE IMPLEMENTATION for Week 3.
+TinyCStr Level 1 Lexer -- fully implemented.
 
-This is a verified, working Level 1 lexer (Stages 1a + 1b). It is provided
-here, already complete, so that Week 3 is graded on PARSER correctness
-in isolation -- if your own Week 2 tinycstr_lexer.py still has a bug,
-importing your own copy here would make a lexer bug look like a parser
-bug. Use this file as-is; you do not need to modify it
-this week.
+This is a verified, working Level 1 lexer (Stages 1a + 1b). 
+ Use this file as-is; you do not need to modify it this week.
 """
 from sly import Lexer
 import sys
