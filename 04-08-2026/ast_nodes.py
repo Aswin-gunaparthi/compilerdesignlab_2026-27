@@ -91,7 +91,7 @@ def pretty(node, indent=0):
 def to_dot(node, graph_name="AST",filename="ast.dot"):
     '''
     Renders an AST subtree as Graphviz DOT source. 
-    Feed the output to dot -Tpng ast.dot -o ast.png (or any Graphviz frontend) to view it. 
+    run `dot -Tpng ast.dot -o ast.png` (or any Graphviz frontend) to view it. 
     '''
     lines = [f"digraph {graph_name} {{"]
     counter = 0
