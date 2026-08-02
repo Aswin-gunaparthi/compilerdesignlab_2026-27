@@ -1,20 +1,6 @@
-# Three-Address Code Using Triple Notation
+# Lab Practice 4 — Generating Three-Address Code from AST and represent it Using Triple Notation
 
 This lab exercise demonstrates how an **Abstract Syntax Tree (AST)** can be traversed to generate **Three-Address Code (TAC)** and represent the generated code using **Triple Notation**.
-
-The progression in this exercise is:
-
-```text
-Source Expression
-       ↓
-      AST
-       ↓
-Three-Address Code
-       ↓
-  Quadruples
-       ↓
-   Triples
-```
 
 The main objective is to understand how intermediate code can be represented more compactly using triples.
 
@@ -50,47 +36,8 @@ The temporary variables `t1` and `t2` hold intermediate results.
 
 ---
 
-# 2. From AST to Three-Address Code
 
-Consider the following assignment:
-
-```text
-x = a + b * c
-```
-
-Its AST is:
-
-```text
-        =
-       / \
-      x   +
-         / \
-        a   *
-           / \
-          b   c
-```
-
-The AST is evaluated using a **postorder traversal**.
-
-The relevant traversal is:
-
-```text
-b → c → * → a → + → =
-```
-
-Therefore, the generated Three-Address Code is:
-
-```text
-t1 = b * c
-t2 = a + t1
-x = t2
-```
-
-The AST and TAC represent the same computation in different forms.
-
----
-
-# 3. Three-Address Code as Quadruples
+# 2. Three-Address Code as Quadruples
 
 One common representation of TAC is the **Quadruple**.
 
@@ -126,7 +73,7 @@ The result field explicitly stores the name of the temporary variable.
 
 ---
 
-# 4. Why Triples?
+# 3. Why Triples?
 
 Quadruples require a separate **result field** for every instruction.
 
@@ -169,7 +116,7 @@ because it is the result produced by triple number `0`.
 
 ---
 
-# 5. Triple Representation
+# 4. Triple Representation
 
 A triple generally contains three fields:
 
@@ -221,7 +168,7 @@ Notice that there is no `t1` or `t2`.
 
 ---
 
-# 6. Quadruple vs Triple
+# 5. Quadruple vs Triple
 
 The difference becomes clearer by comparing the two representations.
 
@@ -259,70 +206,8 @@ Thus, triples avoid the need for explicit temporary variable names.
 
 ---
 
-# 7. AST → TAC → Quadruple → Triple
 
-Consider:
-
-```text
-x = (a + b) * (c - d)
-```
-
-## Step 1: AST
-
-```text
-             =
-           /   \
-          x     *
-               / \
-              +   -
-             / \ / \
-            a  b c  d
-```
-
-## Step 2: Three-Address Code
-
-The AST is traversed bottom-up:
-
-```text
-t1 = a + b
-t2 = c - d
-t3 = t1 * t2
-x = t3
-```
-
-## Step 3: Quadruple Representation
-
-```text
-0: ( +, a,  b,  t1 )
-1: ( -, c,  d,  t2 )
-2: ( *, t1, t2, t3 )
-3: ( =, t3, —,  x  )
-```
-
-## Step 4: Triple Representation
-
-The same computation can be represented as:
-
-```text
-0: ( +, a,    b    )
-1: ( -, c,    d    )
-2: ( *, (0),  (1)  )
-3: ( =, (2),  x    )
-```
-
-Here:
-
-```text
-(0) → result of a + b
-(1) → result of c - d
-(2) → result of (0) * (1)
-```
-
-No temporary variables `t1`, `t2`, or `t3` are required.
-
----
-
-# 8. How the AST is Traversed
+# 6. How the AST is Traversed
 
 The program in this practice example walks through the AST and generates triples.
 
@@ -368,7 +253,7 @@ Thus, the AST is naturally converted into triples through postorder traversal.
 
 ---
 
-# 9. Why Are Triples Useful?
+# 7. Why Are Triples Useful?
 
 Triples have an important advantage: **they eliminate the need for explicit temporary names**.
 
@@ -396,7 +281,7 @@ However, triples have an important consideration: **references depend on instruc
 
 ---
 
-# 10. Indirect Triples
+# 8. Indirect Triples
 
 A related representation is called **Indirect Triples**.
 
@@ -420,7 +305,7 @@ For this practice exercise, the focus is on **ordinary triples**.
 
 ---
 
-# 11. Comparison
+# 9. Comparison
 
 | Feature               | Quadruples       | Triples                      |
 | --------------------- | ---------------- | ---------------------------- |
@@ -436,7 +321,7 @@ For this practice exercise, the focus is on **ordinary triples**.
 
 ---
 
-# 12. Compilation Flow
+# 10. Compilation Flow
 
 This practice exercise can be viewed as the next step after AST construction:
 
@@ -466,7 +351,7 @@ This practice exercise can be viewed as the next step after AST construction:
 
 ---
 
-# 13. Practice Exercises
+# 11. Practice Exercises
 
 For each expression below:
 
@@ -504,60 +389,3 @@ For each exercise, pay particular attention to how a temporary variable in the q
 
 ---
 
-# 14. Key Takeaway
-
-The important progression to remember is:
-
-```text
-AST
- ↓
-Three-Address Code
- ↓
-Quadruples
- ↓
-Triples
-```
-
-For example:
-
-```text
-x = a + b * c
-```
-
-### AST
-
-```text
-        =
-       / \
-      x   +
-         / \
-        a   *
-           / \
-          b   c
-```
-
-### Three-Address Code
-
-```text
-t1 = b * c
-t2 = a + t1
-x = t2
-```
-
-### Quadruples
-
-```text
-0: ( *, b,  c,  t1 )
-1: ( +, a,  t1, t2 )
-2: ( =, t2, —,  x  )
-```
-
-### Triples
-
-```text
-0: ( *, b,    c   )
-1: ( +, a,    (0) )
-2: ( =, (1),  x   )
-```
-
-**The key idea is that quadruples use explicit temporary variables to identify intermediate results, whereas triples use the position of the instruction itself to identify the result.**
