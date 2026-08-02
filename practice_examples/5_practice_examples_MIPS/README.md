@@ -12,7 +12,7 @@ The code generator uses a small subset of MIPS instructions.
 ### Load a value
 
 ```asm
-lw $t0, ...
+lw $t0, <memoryaddress>
 ```
 
 Loads a value from memory into a register.
@@ -70,7 +70,7 @@ div $t2, $t0, $t1
 ### Store a value
 
 ```asm
-sw $t2, ...
+sw $t2, <memoryaddress>
 ```
 
 Stores a register value into memory.
