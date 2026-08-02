@@ -1,4 +1,4 @@
-# Lab Practice 4 — Generating Three-Address Code from AST and represent it Using Triple Notation
+# Lab Practice 4 — Generating Three-Address Code in Triple Notation from AST 
 
 This lab exercise demonstrates how an **Abstract Syntax Tree (AST)** can be traversed to generate **Three-Address Code (TAC)** and represent the generated code using **Triple Notation**.
 
