@@ -18,7 +18,7 @@ class MIPSGenerator:
         self.mips_lines = []
         # simple register allocation, when ever it is part of source operand make it available
         # $t0-$t9  all are available initially
-        self.availablitiy_registers = [True, True, True, True, True, True, True, True, True, True] 
+        self.availabilitiy_registers = [True, True, True, True, True, True, True, True, True, True] 
         self.triple_index_to_reg = {}
 
     # allocate first available register
@@ -27,8 +27,8 @@ class MIPSGenerator:
         Call this to allocate register
         """
         try:
-            freeregidx = self.availablitiy_registers.index(True)
-            self.availablitiy_registers[freeregidx] = False
+            freeregidx = self.availabilitiy_registers.index(True)
+            self.availabilitiy_registers[freeregidx] = False
             reg = "$t" + str(freeregidx)
             return reg 
         except ValueError:
@@ -36,7 +36,7 @@ class MIPSGenerator:
     
     def deallocate_register(self, reg):
         extract_idx = int(reg[2])
-        self.availablitiy_registers[extract_idx]= True 
+        self.availabilitiy_registers[extract_idx]= True 
 
 
     def addMIPS(self, line):
