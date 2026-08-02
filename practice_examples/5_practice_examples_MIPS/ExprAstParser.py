@@ -3,6 +3,7 @@ from ExprAstLexer import ExprAstLexer
 from ast_nodes import * 
 from tac_generator import *
 from three_address_code import render_threeAddressCode 
+from tac_to_mips import generate_mips
 
 class ExprAstParser(Parser):
     tokens = ExprAstLexer.tokens
@@ -65,11 +66,13 @@ class ExprAstParser(Parser):
 
 lexer = ExprAstLexer()
 parser = ExprAstParser()
-inp = 'x=(a+b)*c'
+inp = 'x=a*5+b*c/d'
 result = parser.parse(lexer.tokenize(inp))
 #print(pretty(result))
 #to_dot(result)
-insts = generate_for_statement(result)
-tac = render_threeAddressCode(insts)
+tripleprogram = generate_for_statement(result)
+tac = render_threeAddressCode(tripleprogram)
 print(tac)
+mipscode = generate_mips(tripleprogram)
+print(mipscode)
 

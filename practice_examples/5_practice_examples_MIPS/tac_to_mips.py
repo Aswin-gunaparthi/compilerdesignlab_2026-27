@@ -3,7 +3,7 @@ Three-Address Code to MIPS generator.
 
 # Pending
 """
-from three_address_code import BinOpTAC, CopyTAC, is_literal
+from three_address_code import BinOpTriple, AssignTriple, is_literal, TripleRef
 
 MIPS_OP = {
     '+': 'add',
@@ -14,96 +14,108 @@ MIPS_OP = {
 
 
 class MIPSGenerator:
-    def __init__(self):
-        self.data_names = []       
-        self._declared = set()     
+    def __init__(self):     
         self.mips_lines = []
+        # simple register allocation, when ever it is part of source operand make it available
+        # $t0-$t9  all are available initially
+        self.availablitiy_registers = [True, True, True, True, True, True, True, True, True, True] 
+        self.triple_index_to_reg = {}
 
-    def allocate(self, name):
+    # allocate first available register
+    def allocate_registers(self):
         """
-        Call this every
-        time you're about to lw/sw a variable or temporary name -- not
-        for literals/constants (see is_literal() in three_address_code.py). Stores
-        the ORIGINAL name in self.data_names
+        Call this to allocate register
         """
-        if name not in self._declared:
-            self._declared.add(name)
-            self.data_names.append(name)
+        try:
+            freeregidx = self.availablitiy_registers.index(True)
+            self.availablitiy_registers[freeregidx] = False
+            reg = "$t" + str(freeregidx)
+            return reg 
+        except ValueError:
+            print("Registers are not available")
+    
+    def deallocate_register(self, reg):
+        extract_idx = int(reg[2])
+        self.availablitiy_registers[extract_idx]= True 
+
 
     def addMIPS(self, line):
-        """Provided. Appends one line of MIPS assembly """
+        """Appends one line of MIPS assembly """
         self.mips_lines.append(line)
 
     def load(self, operand, reg):
         """
-          - If is_literal(operand) is True: emit `li reg, operand`
+          - If is_literal(operand) is True: 
+            `li reg, operand`
           - Otherwise:
             `lw reg, name`
         """
         if is_literal(operand):
-
-
-        raise NotImplementedError("implement MIPSGenerator.load()")
+            self.addMIPS(f"li {reg}, {operand}")
+        else:
+            self.addMIPS(f"lw {reg}, disp($fp)of{operand}")
 
     def store(self, reg, name):
         """
-        TODO(week-4): self.allocate(name), then emit
-        `sw reg, {safe_label(name)}`.
+           `sw reg, name`
         """
-        raise NotImplementedError("implement MIPSGenerator.store()")
-
-    def gen_instr(self, instr):
-        """
-        TODO(week-4): dispatch on instr's type and emit MIPS for it.
-
-          isinstance(instr, BinOpTAC):
-              self.load(instr.src1, '$t0')
-              self.load(instr.src2, '$t1')
-              self.emit(f"{MIPS_OP[instr.op]} $t2, $t0, $t1")
-              self.store('$t2', instr.dest)
-
+        self.addMIPS(f"sw {reg},disp($fp)of{name}")
+        self.deallocate_register(reg)
+        
+    def gen_instr(self, triple):
+        """  
           isinstance(instr, CopyTAC):
               self.load(instr.src, '$t0')
               self.store('$t0', instr.dest)
-
-          isinstance(instr, PrintTAC):
-              self.load(instr.src, '$a0')
-              self.emit("li $v0, 1")
-              self.emit("syscall")
         """
-        raise NotImplementedError("implement MIPSGenerator.gen_instr()")
+        if isinstance(triple, BinOpTriple):
+            if isinstance(triple.arg1, TripleRef):
+                src1 = self.triple_index_to_reg[triple.arg1.index]
+            else:
+                src1 = self.allocate_registers()
+                self.load(triple.arg1, src1)
+                
+            if isinstance(triple.arg2, TripleRef):
+                src2 = self.triple_index_to_reg[triple.arg2.index]
+            else:
+                src2 = self.allocate_registers()
+                self.load(triple.arg2, src2)
+
+            dest = self.allocate_registers()
+            
+            self.addMIPS(f"{MIPS_OP[triple.op]} {dest}, {src1}, {src2}")
+            self.triple_index_to_reg[triple.index] = dest
+            if not isinstance(triple.arg1, TripleRef):
+                self.deallocate_register(src1)
+            if not isinstance(triple.arg2, TripleRef):
+                self.deallocate_register(src2)
+        elif isinstance(triple,AssignTriple):
+            if isinstance(triple.arg1, TripleRef):
+                src = self.triple_index_to_reg[triple.arg1.index]
+            else:
+                src = self.allocate_registers()
+                self.load(triple.arg1, src)
+            self.store(src, triple.dest)
+
 
     def generate(self, instructions):
         """
-        Provided. Runs gen_instr() over the whole 3AC list, then appends
+        Runs gen_instr() over the whole 3AC list, then appends
         the program-exit syscall sequence, then renders the final .s
         text. You should not need to change this method.
         """
         for instr in instructions:
             self.gen_instr(instr)
-        self.emit("li $v0, 10")
-        self.emit("syscall")
+        self.addMIPS("li $v0, 10")
+        self.addMIPS("syscall")
         return self.render()
 
     def render(self):
-        """
-        Provided. Assembles the final .data/.text sections, applying
-        safe_label() to every name written as a .data label. Every
-        variable/temporary gets exactly one .word, initialized to 0
-        (the initial value doesn't matter -- every one is written by a
-        CopyTAC or BinOpTAC before it's ever read, since TinyCStr has no
-        uninitialized reads in Level 1's grammar).
-        """
-        lines = [".data"]
-        for name in self.data_names:
-            lines.append(f"{safe_label(name)}: .word 0")
-        lines.append(".text")
-        lines.append(".globl main")
-        lines.append("main:")
-        lines.extend(f"    {line}" for line in self.text_lines)
+        lines = []
+        lines.extend(f"{line}" for line in self.mips_lines)
         return "\n".join(lines) + "\n"
 
 
-def generate_mips(instructions):
-    """Convenience wrapper: generate() a fresh MIPSGenerator for one function's 3AC."""
-    return MIPSGenerator().generate(instructions)
+def generate_mips(tripleprogram):
+    """wrapper: generates MIPS assembly"""
+    return MIPSGenerator().generate(tripleprogram.triples)
