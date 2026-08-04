@@ -2,8 +2,8 @@
 SymbolTable -- fully implemented.
 
 Declarations write into a SymbolTable during parsing.
-
 """
+
 from enum import Enum
 
 DataType = Enum('DataType', ['INT'])
@@ -13,6 +13,7 @@ class SymbolTableEntry:
     def __init__(self, name, datatype):
         self.name = name
         self.datatype = datatype
+        self.offset = None
 
     def getSymbolName(self):
         return self.name
@@ -20,8 +21,14 @@ class SymbolTableEntry:
     def getDataType(self):
         return self.datatype
 
+    def getOffset(self):
+        return self.offset
+
+    def setOffset(self, offset):
+        self.offset = offset
+
     def print(self):
-        print(f"{self.name}: {self.datatype.name}")
+        print(f"{self.name}: {self.datatype.name}, offset = {self.offset}")
 
 
 class SymbolTable:
@@ -29,23 +36,38 @@ class SymbolTable:
         self.table = []
 
     def addSymbol(self, symbol):
-        """
-        symbol: a SymbolTableEntry. Appends unconditionally -- this does
-        NOT check for redeclaration. Detecting a name declared twice in
-        the same scope is a semantic-analysis concern (Week 6), not a
-        parser concern; the parser's job this week is just to record
-        what it sees.
-        """
         self.table.append(symbol)
 
     def nameInSymbolTable(self, name):
-        return any(entry.getSymbolName() == name for entry in self.table)
+        return any(entry.getSymbolName() == name
+                   for entry in self.table)
 
     def getSymbol(self, name):
         for entry in self.table:
             if entry.getSymbolName() == name:
                 return entry
         return None
+
+    def getSizeOfType(self, datatype):
+        if datatype == DataType.INT:
+            return 4
+
+        raise ValueError(f"Unknown data type: {datatype}")
+
+    def assignOffsetsToSymbols(self):
+        offset = 0
+
+        for entry in self.table:
+            entry.setOffset(offset)
+            offset += self.getSizeOfType(entry.getDataType())
+
+    def size(self):
+        total = 0
+
+        for entry in self.table:
+            total += self.getSizeOfType(entry.getDataType())
+
+        return total
 
     def printSymbolTable(self):
         for entry in self.table:
