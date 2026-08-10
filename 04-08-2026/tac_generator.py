@@ -57,10 +57,10 @@ class TACGenerator:
           isinstance(node, BinOp) ->
               left  = self.gen_expr(node.left)
               right = self.gen_expr(node.right)
-              return self.program.append(OpTriple(node.op, left, right))
+              return self.program.append(BinOpTriple(node.op, left, right))
               # append() sets the index and returns a ready TripleRef
               # for you -- that's the whole reason to use it here instead
-              # of constructing OpTriple and a TripleRef separately.
+              # of constructing BinOpTriple and a TripleRef separately.
 
         Note the order: fully resolve both operands (which may themselves
         recursively append triples for nested BinOps) BEFORE appending
