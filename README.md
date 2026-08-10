@@ -29,7 +29,7 @@ The course structure is inspired by Prof. Uday Khedker's
 | 11 | Activation records | L4 | Full calling convention on MIPS |
 | 12 | Optimizations | — | Constant folding, copy propagation, CSE, dead code elimination, loop unrolling |
 
-Full rationale for the level/stage breakdown is in `CDPlan2026_27.pdf`.
+Full rationale for the level/stage breakdown is in `CDLabPlan2026_27.pdf`.
 ---
 
 ## Submitting your work
