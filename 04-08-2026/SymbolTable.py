@@ -51,22 +51,18 @@ class SymbolTable:
     def getSizeOfType(self, datatype):
         if datatype == DataType.INT:
             return 4
-
         raise ValueError(f"Unknown data type: {datatype}")
 
     def assignOffsetsToSymbols(self):
         offset = 0
-
         for entry in self.table:
             entry.setOffset(offset)
             offset += self.getSizeOfType(entry.getDataType())
 
     def size(self):
         total = 0
-
         for entry in self.table:
             total += self.getSizeOfType(entry.getDataType())
-
         return total
 
     def printSymbolTable(self):
