@@ -88,10 +88,12 @@ class TinyCStrLexer(Lexer):
         Then advance past the single bad character so lexing continues
         (self.index += 1) rather than stopping at the first error.
         """
-        print(f"ERROR {t.value[0]} {self.lineno}")
+        print(f"ERROR {t.value[0]} {self.lineno}", file=self.error_sink)
         self.index += 1
-        raise NotImplementedError("implement TinyCStrLexer.error()")
 
+    def __init__(self, error_sink=None):
+        super().__init__()
+        self.error_sink = error_sink
 
 if __name__ == '__main__':
     sample = "int main(){\nint a;\na = 5;\nprint a;\n}"
